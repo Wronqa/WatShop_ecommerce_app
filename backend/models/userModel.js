@@ -2,6 +2,8 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 const bcrypt = require('bcrypt')
 const ErrorHandler = require('../tools/errorHandler')
+const crypto = require('crypto-js')
+const { nanoid } = require('nanoid')
 
 const { Schema } = mongoose
 
@@ -39,6 +41,18 @@ const userSchema = new Schema(
         required: true,
       },
     },
+    accountStatus: {
+      activeStatus: {
+        type: Boolean,
+        default: false,
+      },
+      activationToken: {
+        type: String,
+      },
+      activationTokenExpire: {
+        type: Date,
+      },
+    },
   },
   { timestamps: true }
 )
@@ -64,5 +78,16 @@ userSchema.pre('save', async function (next) {
     Number(process.env.SALT_ROUNDS)
   )
 })
+
+userSchema.methods.generateActivationToken = function () {
+  const token = nanoid(20)
+
+  this.accountStatus.activationToken = crypto
+    .SHA256(token)
+    .toString(crypto.enc.Hex)
+  this.accountStatus.activationTokenExpire = Date.now() + 60 * 60 * 1000
+
+  return token
+}
 
 module.exports = mongoose.model('User', userSchema)
