@@ -22,18 +22,28 @@ exports.registerUser = asyncErrorMiddleware(async (req, res, next) => {
   })
 
   const activationToken = user.generateActivationToken()
-  ///await user.save()
+
+  await user.save()
 
   const activationMessage = `Your activation link is: \n\n ${
     req.protocol
   }://${req.get('host')}/user/confrim/${activationToken}
   `
 
-  await sendMail({
-    email: user.email,
-    subject: 'WatShop - Active you account',
-    message: activationMessage,
-  })
+  try {
+    await sendMail({
+      email: user.email,
+      subject: 'WatShop - Active you account',
+      message: activationMessage,
+    })
+  } catch (err) {
+    user.accountStatus.activationToken = undefined
+    user.accountStatus.activationTokenExpire = undefined
+
+    await user.save({ validateBeforeSave: false })
+
+    return next(new ErrorHandler(err.message, 500))
+  }
 
   res.status(200).json({
     success: true,
