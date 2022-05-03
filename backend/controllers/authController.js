@@ -10,6 +10,12 @@ const sendTokens = require('../tools/jwtManager')
 exports.registerUser = asyncErrorMiddleware(async (req, res, next) => {
   let { email, username, password } = req.body
 
+  if (!email || !username || !password) {
+    return next(
+      new ErrorHandler('Plase enter email, username and password', 401)
+    )
+  }
+
   email = validator.escape(email)
   username = validator.escape(username)
   password = validator.escape(password)
@@ -84,6 +90,10 @@ exports.activateUser = asyncErrorMiddleware(async (req, res, next) => {
 
 exports.resendActivationToken = asyncErrorMiddleware(async (req, res, next) => {
   const { email } = req.body
+
+  if (!email) {
+    return next(new ErrorHandler('Please enter an email address', 401))
+  }
 
   validator.escape(email)
 
