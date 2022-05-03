@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt')
 const ErrorHandler = require('../tools/errorHandler')
 const crypto = require('crypto-js')
 const { nanoid } = require('nanoid')
+const jwt = require('jsonwebtoken')
 
 const { Schema } = mongoose
 
@@ -88,6 +89,29 @@ userSchema.methods.generateActivationToken = function () {
   this.accountStatus.activationTokenExpire = Date.now() + 60 * 60 * 1000
 
   return token
+}
+
+userSchema.methods.comparePasswords = async function (password) {
+  return await bcrypt.compare(password, this.password)
+}
+
+userSchema.methods.getJWTTokens = function () {
+  return {
+    accessToken: jwt.sign(
+      { username: this.username },
+      process.env.JWT_SECRET_KEY,
+      {
+        expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRES_TIME,
+      }
+    ),
+    refreshToken: jwt.sign(
+      { username: this.username },
+      process.env.JWT_REFRESH_SECRET_KEY,
+      {
+        expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRES_TIME,
+      }
+    ),
+  }
 }
 
 module.exports = mongoose.model('User', userSchema)

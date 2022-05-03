@@ -5,6 +5,7 @@ const ErrorHandler = require('../tools/errorHandler')
 const sendMail = require('../tools/mailSender')
 const getActivationMessage = require('../templates/activationMessage')
 const crypto = require('crypto-js')
+const sendTokens = require('../tools/jwtManager')
 
 exports.registerUser = asyncErrorMiddleware(async (req, res, next) => {
   let { email, username, password } = req.body
@@ -120,4 +121,38 @@ exports.resendActivationToken = asyncErrorMiddleware(async (req, res, next) => {
     soccess: true,
     message: 'Activation email has been send',
   })
+})
+
+exports.loginUser = asyncErrorMiddleware(async (req, res, next) => {
+  const { email, password } = req.body
+
+  if (!email || !password) {
+    return next(new ErrorHandler('Please enter email and password', 400))
+  }
+
+  validator.escape(email)
+  validator.escape(password)
+
+  const user = await User.findOne({ email }).select('+password')
+
+  if (!user) {
+    return next(new ErrorHandler('User not found', 404))
+  }
+
+  const passwordMatch = await user.comparePasswords(password)
+
+  if (!passwordMatch) {
+    return next(new ErrorHandler('Invalid password', 401))
+  }
+
+  if (user.accountStatus.activeStatus === false) {
+    return next(
+      new ErrorHandler(
+        'Your account is not active. Plase confrim your email address',
+        403
+      )
+    )
+  }
+
+  sendTokens(user, 200, res)
 })
