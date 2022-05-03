@@ -4,16 +4,17 @@ const sendTokens = (user, code, res) => {
   const { password, _id, accountStatus, updatedAt, __v, ...others } =
     user.toJSON()
 
-  res.cookie('access_token', accessToken, {
+  res.cookie('accessToken', accessToken, {
     expires: new Date(Date.now() + 0.5 * 60 * 60 * 1000),
     httpOnly: true,
-    secure: true,
+    ///secure: true,
   })
 
-  res.cookie('refresh_token', refreshToken, {
+  res.cookie('refreshToken', refreshToken, {
     expires: new Date(Date.now() + 480 * 60 * 60 * 1000),
     httpOnly: true,
-    secure: true,
+    ///secure: true,
+    path: '/auth/refresh',
   })
 
   res.json({

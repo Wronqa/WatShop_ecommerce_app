@@ -8,15 +8,16 @@ require('dotenv').config({ path: __dirname + '/config/.env' })
 const app = express()
 
 //Routes
-///const userRoute = require('./routes/userRoute')
+const userRoute = require('./routes/userRoute')
 const authRoute = require('./routes/authRoute')
 
+app.use(cookieParser())
 app.use(express.json())
 app.use(bodyParser.json())
-app.use(cookieParser())
 
 ///app.use('/api/', userRoute)
 app.use('/api', authRoute)
+app.use('/api', userRoute)
 
 //Middlewares
 app.use(errorMiddleware)
