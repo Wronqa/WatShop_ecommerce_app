@@ -30,15 +30,38 @@ exports.addProduct = asyncErrorMiddleware(async (req, res, next) => {
 })
 
 exports.getAllProducts = asyncErrorMiddleware(async (req, res, next) => {
+  const maxProductsPerPage = 6
   const parameters = req.query
 
+  const allProductsCount = await Product.countDocuments()
+
   for (parameter in parameters) {
-    parameters[parameter] = validator.escape(parameters[parameter])
+    if (parameter !== 'price')
+      parameters[parameter] = validator.escape(parameters[parameter])
   }
 
-  const productsFilter = new ProductsFilter(Product, parameters).search()
+  const productsFilter = new ProductsFilter(Product, parameters)
+    .search()
+    .filter()
+    .splitIntoPages(maxProductsPerPage)
 
   const products = await productsFilter.query
 
-  res.status(200).json({ success: true, products })
+  const productsCount = products.length
+
+  res
+    .status(200)
+    .json({ success: true, allProductsCount, productsCount, products })
+})
+exports.getProductDetails = asyncErrorMiddleware(async (req, res, next) => {
+  let productId = req.params.id
+
+  productId = validator.escape(productId)
+
+  const product = await Product.findById(productId)
+
+  res.status(200).json({
+    success: true,
+    product,
+  })
 })
