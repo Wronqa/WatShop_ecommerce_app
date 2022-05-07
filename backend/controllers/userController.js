@@ -4,9 +4,9 @@ const User = require('../models/userModel')
 const ErrorHandler = require('../tools/errorHandler')
 
 exports.getUser = asyncErrorMiddleware(async (req, res, next) => {
-  const username = req.params.username
+  let username = req.params.username
 
-  validator.escape(username)
+  username = validator.escape(username)
 
   const user = await User.findOne({ username })
 

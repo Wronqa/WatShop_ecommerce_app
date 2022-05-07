@@ -58,9 +58,9 @@ exports.registerUser = asyncErrorMiddleware(async (req, res, next) => {
 })
 
 exports.activateUser = asyncErrorMiddleware(async (req, res, next) => {
-  const token = req.params.token
+  let token = req.params.token
 
-  validator.escape(token)
+  token = validator.escape(token)
 
   if (!token) {
     return next(new ErrorHandler('Token not founded', 404))
@@ -89,13 +89,13 @@ exports.activateUser = asyncErrorMiddleware(async (req, res, next) => {
 })
 
 exports.resendActivationToken = asyncErrorMiddleware(async (req, res, next) => {
-  const { email } = req.body
+  let { email } = req.body
 
   if (!email) {
     return next(new ErrorHandler('Please enter an email address', 401))
   }
 
-  validator.escape(email)
+  email = validator.escape(email)
 
   const user = await User.findOne({ email })
 
@@ -128,20 +128,20 @@ exports.resendActivationToken = asyncErrorMiddleware(async (req, res, next) => {
   }
 
   res.status(200).json({
-    soccess: true,
+    success: true,
     message: 'Activation email has been send',
   })
 })
 
 exports.loginUser = asyncErrorMiddleware(async (req, res, next) => {
-  const { email, password } = req.body
+  let { email, password } = req.body
 
   if (!email || !password) {
     return next(new ErrorHandler('Please enter email and password', 400))
   }
 
-  validator.escape(email)
-  validator.escape(password)
+  email = validator.escape(email)
+  password = validator.escape(password)
 
   const user = await User.findOne({ email }).select('+password')
 

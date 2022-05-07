@@ -16,3 +16,12 @@ exports.checkAuthentication = asyncErrorMiddleware(async (req, res, next) => {
 
   next()
 })
+
+exports.isAdminCheck = asyncErrorMiddleware((req, res, next) => {
+  if (req.user.role !== 'admin')
+    return next(
+      new ErrorHandler('You dont have permissions to do this operation', 403)
+    )
+
+  next()
+})
