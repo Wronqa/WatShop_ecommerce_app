@@ -68,9 +68,9 @@ exports.updateUser = asyncErrorMiddleware(async (req, res, next) => {
     return next(new ErrorHandler('User not found', 404))
   }
 
-  if (user.username !== req.user.username) {
+  if (user.username !== req.user.username && req.user.role !== 'admin') {
     return next(
-      new ErrorHandler('rou dont have permissions to do this operation', 407)
+      new ErrorHandler('You dont have permissions to do this operation', 407)
     )
   }
 
@@ -85,5 +85,38 @@ exports.updateUser = asyncErrorMiddleware(async (req, res, next) => {
   res.status(200).json({
     success: true,
     user: others,
+  })
+})
+
+exports.changePassword = asyncErrorMiddleware(async (req, res, next) => {
+  let { oldPassword, newPassword } = req.body
+
+  if (!oldPassword && !newPassword)
+    return next(new ErrorHandler('Please enter password', 400))
+
+  oldPassword = validator.escape(oldPassword)
+  newPassword = validator.escape(newPassword)
+
+  let user = await User.findOne({ username: req.user.username }).select(
+    '+password'
+  )
+
+  if (!user) {
+    return next(new ErrorHandler('User not found', 404))
+  }
+
+  const passwordMatch = await user.comparePasswords(oldPassword)
+
+  if (!passwordMatch) {
+    return next(new ErrorHandler('Wrong password', 400))
+  }
+
+  user.password = newPassword
+
+  await user.save()
+
+  res.status(200).json({
+    success: true,
+    message: 'Password changed successfully',
   })
 })

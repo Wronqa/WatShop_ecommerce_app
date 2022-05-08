@@ -67,21 +67,33 @@ userSchema.pre('save', async function (next) {
     next()
   }
 
-  const user = await mongoose
-    .model('User', userSchema)
-    .findOne({ $or: [{ email: this.email }, { username: this.username }] })
+  if (this.isModified('usernme') || this.isModified('email')) {
+    const user = await mongoose
+      .model('User', userSchema)
+      .findOne({ $or: [{ email: this.email }, { username: this.username }] })
 
-  if (user) {
-    if (this.username === user.username)
-      next(new ErrorHandler('This username is already taken', 500))
-    if (this.email === user.email)
-      next(new ErrorHandler('This email address is already taken', 500))
+    if (user) {
+      if (this.username === user.username)
+        next(new ErrorHandler('This username is already taken', 500))
+      if (this.email === user.email)
+        next(new ErrorHandler('This email address is already taken', 500))
+    }
   }
 
   this.password = await bcrypt.hash(
     this.password,
     Number(process.env.SALT_ROUNDS)
   )
+})
+userSchema.pre('findOneAndUpdate', async function (next) {
+  const user = await mongoose
+    .model('User', userSchema)
+    .findOne({ email: this._update.email })
+
+  if (user) {
+    if (this._update.email === user.email)
+      next(new ErrorHandler('This email address is already taken', 500))
+  }
 })
 
 userSchema.methods.generateActivationToken = function () {

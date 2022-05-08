@@ -166,3 +166,24 @@ exports.loginUser = asyncErrorMiddleware(async (req, res, next) => {
 
   sendTokens(user, 200, res)
 })
+exports.logout = asyncErrorMiddleware(async (req, res, next) => {
+  res.cookie('accessToken', null, {
+    expires: new Date(Date.now()),
+    httpOnly: true,
+    ///secure: true,
+  })
+
+  res.cookie('refreshToken', null, {
+    expires: new Date(Date.now()),
+    httpOnly: true,
+    ///secure: true,
+    path: '/auth/refresh',
+  })
+
+  res.json({
+    success: true,
+    message: 'Logout successfully',
+  })
+
+  res.status(200).send()
+})
