@@ -133,3 +133,34 @@ exports.rateProduct = asyncErrorMiddleware(async (req, res, next) => {
     message: isRated ? 'Rating was deleted' : 'Rating successfully added',
   })
 })
+exports.updateProduct = asyncErrorMiddleware(async (req, res, next) => {
+  let { name, description, price, images, category } = req.body
+
+  if (name && description && category) {
+    name = validator.escape(name)
+    description = validator.escape(description)
+    category = validator.escape(category)
+  }
+
+  const product = await Product.findByIdAndUpdate(
+    req.params.id,
+    {
+      name,
+      description,
+      price,
+      images,
+      category,
+      user: req.body.user,
+    },
+    { new: true, runValidators: true }
+  )
+
+  if (!product) {
+    return next(new ErrorHandler('Product not found', 404))
+  }
+
+  res.status(200).json({
+    success: true,
+    product,
+  })
+})
