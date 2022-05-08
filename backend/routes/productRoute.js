@@ -13,15 +13,19 @@ const {
   isAdminCheck,
 } = require('../middleware/authentication')
 
-router.route('/product/add').post(checkAuthentication, isAdminCheck, addProduct)
-router.route('/product/all').get(getAllProducts)
-router.route('/product/get/:id').get(getProductDetails)
-router
-  .route('/product/delete/:id')
-  .delete(checkAuthentication, isAdminCheck, deleteProduct)
+///User routes
+router.route('/products').get(getAllProducts)
 router.route('/product/rating').post(checkAuthentication, rateProduct)
+router.route('/product/:id').get(getProductDetails)
+
+///Admin routes
 router
-  .route('/product/update/:id')
-  .post(checkAuthentication, isAdminCheck, updateProduct)
+  .route('/admin/product/add')
+  .post(checkAuthentication, isAdminCheck, addProduct)
+
+router
+  .route('/admin/product/:id')
+  .delete(checkAuthentication, isAdminCheck, deleteProduct)
+  .put(checkAuthentication, isAdminCheck, updateProduct)
 
 module.exports = router

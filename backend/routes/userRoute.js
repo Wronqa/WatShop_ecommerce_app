@@ -1,7 +1,25 @@
 const router = require('express').Router()
-const { checkAuthentication } = require('../middleware/authentication')
-const { getUser } = require('../controllers/userController')
+const {
+  checkAuthentication,
+  isAdminCheck,
+} = require('../middleware/authentication')
+const {
+  getUser,
+  deleteUser,
+  getAllUser,
+  updateUser,
+} = require('../controllers/userController')
 
-router.route('/user/:username').get(checkAuthentication, getUser)
+///Users route
+router
+  .route('/user/:username')
+  .get(checkAuthentication, getUser)
+  .put(checkAuthentication, updateUser)
+
+///Admin routes
+router.route('/admin/users').get(checkAuthentication, isAdminCheck, getAllUser)
+router
+  .route('/admin/user/:username')
+  .delete(checkAuthentication, isAdminCheck, deleteUser)
 
 module.exports = router

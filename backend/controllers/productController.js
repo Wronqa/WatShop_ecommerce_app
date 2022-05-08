@@ -61,6 +61,10 @@ exports.getProductDetails = asyncErrorMiddleware(async (req, res, next) => {
 
   const product = await Product.findById(productId)
 
+  if (!product) {
+    return next(new ErrorHandler('Product not found', 404))
+  }
+
   res.status(200).json({
     success: true,
     product,
