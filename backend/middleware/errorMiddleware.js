@@ -1,6 +1,11 @@
 const errorMiddleware = (err, req, res, next) => {
-  const message = err.message || 'Server error'
-  const errorCode = err.errorCode || 500
+  let message = err.message || 'Server error'
+  let errorCode = err.errorCode || 500
+
+  if (err.name === 'CastError') {
+    message = 'Product not found'
+    errorCode = 404
+  }
 
   res.status(errorCode).json({
     success: false,

@@ -18,10 +18,16 @@ const productModel = new Schema(
       type: Number,
       required: [true, 'Please enter a price'],
     },
-    rating: {
-      type: Number,
-      default: 0,
-    },
+    ratings: [
+      {
+        value: {
+          type: Number,
+        },
+        user: {
+          type: String,
+        },
+      },
+    ],
     images: [
       {
         public_id: {

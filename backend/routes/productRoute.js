@@ -3,6 +3,8 @@ const {
   addProduct,
   getAllProducts,
   getProductDetails,
+  deleteProduct,
+  rateProduct,
 } = require('../controllers/productController')
 
 const {
@@ -13,5 +15,9 @@ const {
 router.route('/product/add').post(checkAuthentication, isAdminCheck, addProduct)
 router.route('/product/all').get(getAllProducts)
 router.route('/product/get/:id').get(getProductDetails)
+router
+  .route('/product/delete/:id')
+  .delete(checkAuthentication, isAdminCheck, deleteProduct)
+router.route('/product/rating').post(checkAuthentication, rateProduct)
 
 module.exports = router
