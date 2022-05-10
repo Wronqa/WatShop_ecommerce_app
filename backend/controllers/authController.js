@@ -209,5 +209,23 @@ exports.resetPassword = asyncErrorMiddleware(async (req, res, next) => {
 
   const resetPasswordMessage = getResetPasswordMessage(req, resetPasswordToken)
 
-  console.log(resetPasswordMessage)
+  try {
+    await sendMail({
+      email: user.email,
+      subject: 'WatShop - Reset your password',
+      message: resetPasswordMessage,
+    })
+  } catch (err) {
+    user.resetPasswordToken = undefined
+    user.resetPasswordTokenExpire = undefined
+
+    await user.save({ validateBeforeSave: false })
+
+    return next(new ErrorHandler(err.message, 500))
+  }
+
+  res.status(200).json({
+    success: true,
+    message: 'Reset password message send',
+  })
 })

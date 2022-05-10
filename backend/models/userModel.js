@@ -117,7 +117,7 @@ userSchema.methods.generateResetPasswordToken = function () {
 
   this.resetPasswordToken = crypto.SHA256(token).toString(crypto.enc.Hex)
 
-  this.accountStatus.activationTokenExpire = Date.now() + 60 * 60 * 1000
+  this.resetPasswordTokenExpire = Date.now() + 60 * 60 * 1000
 
   return token
 }
