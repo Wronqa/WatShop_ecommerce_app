@@ -58,6 +58,12 @@ const userSchema = new Schema(
         type: Date,
       },
     },
+    resetPasswordToken: {
+      type: String,
+    },
+    resetPasswordTokenExpire: {
+      type: Date,
+    },
   },
   { timestamps: true }
 )
@@ -67,7 +73,7 @@ userSchema.pre('save', async function (next) {
     next()
   }
 
-  if (this.isModified('usernme') || this.isModified('email')) {
+  if (this.isModified('username') || this.isModified('email')) {
     const user = await mongoose
       .model('User', userSchema)
       .findOne({ $or: [{ email: this.email }, { username: this.username }] })
@@ -102,6 +108,15 @@ userSchema.methods.generateActivationToken = function () {
   this.accountStatus.activationToken = crypto
     .SHA256(token)
     .toString(crypto.enc.Hex)
+  this.accountStatus.activationTokenExpire = Date.now() + 60 * 60 * 1000
+
+  return token
+}
+userSchema.methods.generateResetPasswordToken = function () {
+  const token = nanoid(20)
+
+  this.resetPasswordToken = crypto.SHA256(token).toString(crypto.enc.Hex)
+
   this.accountStatus.activationTokenExpire = Date.now() + 60 * 60 * 1000
 
   return token

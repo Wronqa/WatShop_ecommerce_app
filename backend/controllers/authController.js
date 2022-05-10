@@ -4,6 +4,7 @@ const asyncErrorMiddleware = require('../middleware/asyncErrorMiddleware')
 const ErrorHandler = require('../tools/errorHandler')
 const sendMail = require('../tools/mailSender')
 const getActivationMessage = require('../templates/activationMessage')
+const getResetPasswordMessage = require('../templates/resetPasswordMessage')
 const crypto = require('crypto-js')
 const sendTokens = require('../tools/jwtManager')
 
@@ -186,4 +187,27 @@ exports.logout = asyncErrorMiddleware(async (req, res, next) => {
   })
 
   res.status(200).send()
+})
+exports.resetPassword = asyncErrorMiddleware(async (req, res, next) => {
+  let { email } = req.body
+
+  email = validator.escape(email)
+
+  if (!email) {
+    return next(new ErrorHandler('Please enter a email adress', 400))
+  }
+
+  const user = await User.findOne({ email })
+
+  if (!user) {
+    return next(new ErrorHandler('User not found', 407))
+  }
+
+  const resetPasswordToken = user.generateResetPasswordToken()
+
+  await user.save()
+
+  const resetPasswordMessage = getResetPasswordMessage(req, resetPasswordToken)
+
+  console.log(resetPasswordMessage)
 })
