@@ -81,6 +81,8 @@ exports.activateUser = asyncErrorMiddleware(async (req, res, next) => {
     user.accountStatus.activationTokenExpire = undefined
 
     await user.save()
+  } else {
+    return next(new ErrorHandler('Account activation token expired.', 400))
   }
 
   res.status(200).json({
@@ -227,5 +229,41 @@ exports.resetPassword = asyncErrorMiddleware(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: 'Reset password message send',
+  })
+})
+exports.setNewPassword = asyncErrorMiddleware(async (req, res, next) => {
+  let { password } = req.body
+  let token = req.params.token
+
+  password = validator.escape(password)
+  token = validator.escape(token)
+
+  if (!password) {
+    return next(new ErrorHandler('Please type new password', 400))
+  }
+
+  const hashedToken = crypto.SHA256(token).toString(crypto.enc.Hex)
+
+  let user = await User.findOne({ resetPasswordToken: hashedToken }).select(
+    '+password'
+  )
+
+  if (!user) {
+    return next(new ErrorHandler('User not found', 404))
+  }
+
+  if (Date.now() < user.resetPasswordTokenExpire) {
+    user.password = password
+    user.resetPasswordTokenExpire = undefined
+    user.resetPasswordToken = undefined
+
+    await user.save()
+  } else {
+    return next(new ErrorHandler('Password reset token expired', 400))
+  }
+
+  res.status(200).json({
+    success: true,
+    message: 'The password was changed successfully',
   })
 })

@@ -5,6 +5,7 @@ const {
   resendActivationToken,
   logout,
   resetPassword,
+  setNewPassword,
 } = require('../controllers/authController')
 
 const { checkAuthentication } = require('../middleware/authentication')
@@ -18,5 +19,6 @@ router.route('/auth/activate/:token').put(activateUser)
 router.route('/auth/resend').post(resendActivationToken)
 router.route('/auth/logout').post(logout)
 router.route('/auth/reset').post(resetPassword)
+router.route('/auth/reset/:token').post(setNewPassword)
 
 module.exports = router
