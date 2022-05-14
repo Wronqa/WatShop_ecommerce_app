@@ -6,7 +6,7 @@ const sendMail = require('../tools/mailSender')
 const getActivationMessage = require('../templates/activationMessage')
 const getResetPasswordMessage = require('../templates/resetPasswordMessage')
 const crypto = require('crypto-js')
-const sendTokens = require('../tools/jwtManager')
+const { sendTokens } = require('../tools/jwtManager')
 
 exports.registerUser = asyncErrorMiddleware(async (req, res, next) => {
   let { email, username, password } = req.body
@@ -266,4 +266,8 @@ exports.setNewPassword = asyncErrorMiddleware(async (req, res, next) => {
     success: true,
     message: 'The password was changed successfully',
   })
+})
+
+exports.refreshTokens = asyncErrorMiddleware(async (req, res, next) => {
+  sendTokens(req.user, 200, res)
 })

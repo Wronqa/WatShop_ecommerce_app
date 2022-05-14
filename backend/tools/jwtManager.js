@@ -1,5 +1,9 @@
+const refreshTokens = new Map()
+
 const sendTokens = (user, code, res) => {
   const { accessToken, refreshToken } = user.getJWTTokens()
+
+  refreshTokens.set(user.username, refreshToken)
 
   const { password, _id, accountStatus, updatedAt, __v, ...others } =
     user.toJSON()
@@ -14,7 +18,7 @@ const sendTokens = (user, code, res) => {
     expires: new Date(Date.now() + 480 * 60 * 60 * 1000),
     httpOnly: true,
     ///secure: true,
-    path: '/auth/refresh',
+    path: 'auth/refresh',
   })
 
   res.json({
@@ -24,5 +28,8 @@ const sendTokens = (user, code, res) => {
 
   res.status(code).send()
 }
+const getRefreshToken = (username) => {
+  return refreshTokens.get(username)
+}
 
-module.exports = sendTokens
+module.exports = { sendTokens, getRefreshToken }
