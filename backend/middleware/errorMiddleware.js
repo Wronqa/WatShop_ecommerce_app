@@ -5,6 +5,9 @@ const errorMiddleware = (err, req, res, next) => {
   if (err.name === 'CastError') {
     message = 'Product not found'
     errorCode = 404
+  } else if (err.name === 'TokenExpiredError') {
+    message = 'You are not authenticated'
+    errorCode = 407
   }
 
   res.status(errorCode).json({

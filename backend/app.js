@@ -1,4 +1,5 @@
 const express = require('express')
+const helmet = require('helmet')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const errorMiddleware = require('./middleware/errorMiddleware')
@@ -12,6 +13,7 @@ const userRoute = require('./routes/userRoute')
 const authRoute = require('./routes/authRoute')
 const productRoute = require('./routes/productRoute')
 
+app.use(helmet())
 app.use(cookieParser())
 app.use(express.json())
 app.use(bodyParser.json())
