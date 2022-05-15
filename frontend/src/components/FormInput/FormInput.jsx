@@ -2,13 +2,19 @@ import React from 'react'
 
 import './formInput.css'
 
-export const FormInput = () => {
+export const FormInput = (props) => {
+  const { label, onChange, ...others } = props
   return (
     <div className='formInput'>
       <label htmlFor='' className='formInput__label'>
-        Username
+        {label}
       </label>
-      <input type='text' className='formInput__input' />
+      <input
+        type='text'
+        {...others}
+        className='formInput__input'
+        onChange={onChange}
+      />
     </div>
   )
 }

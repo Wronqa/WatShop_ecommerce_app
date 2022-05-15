@@ -1,9 +1,53 @@
 import React from 'react'
+import { useState } from 'react'
+import { Wave } from '../../components/Background/Wave'
 import { FormInput } from '../../components/FormInput/FormInput'
 
 import './register.css'
 
+const inputs = [
+  {
+    id: 1,
+    name: 'username',
+    placeholder: 'username',
+    type: 'text',
+    label: 'Username',
+  },
+  {
+    id: 2,
+    name: 'email',
+    placeholder: 'email',
+    type: 'text',
+    label: 'Email',
+  },
+  {
+    id: 3,
+    name: 'password',
+    placeholder: 'password',
+    type: 'password',
+    label: 'Password',
+  },
+  {
+    id: 4,
+    name: 'confirmPassword',
+    placeholder: 'confirm password',
+    type: 'password',
+    label: 'Confrim password',
+  },
+]
+
 export const Register = () => {
+  const [values, setValues] = useState({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  })
+
+  const onChange = (e) => {
+    setValues({ ...values, [e.target.name]: e.target.value })
+  }
+
   return (
     <div className='register'>
       <div className='register__navbar'>
@@ -19,28 +63,17 @@ export const Register = () => {
       </div>
       <form action='' className='register__form'>
         <h1 className='register__title'>Register now!</h1>
-        <FormInput />
-        <FormInput />
-        <FormInput />
-        <FormInput />
+        {inputs.map((input) => (
+          <FormInput
+            key={input.id}
+            {...input}
+            value={values[input.name]}
+            onChange={onChange}
+          />
+        ))}
         <button className='register__button'>Register</button>
       </form>
-
-      <svg
-        id='svg'
-        viewBox='0 0 1440 400'
-        xmlns='http://www.w3.org/2000/svg'
-        class='transition duration-300 ease-in-out delay-150'
-        className='register__wave'
-      >
-        <path
-          d='M 0,400 C 0,400 0,200 0,200 C 95.71428571428572,184.89285714285714 191.42857142857144,169.78571428571428 312,194 C 432.57142857142856,218.21428571428572 578.0000000000001,281.75 693,274 C 807.9999999999999,266.25 892.5714285714287,187.21428571428572 1012,163 C 1131.4285714285713,138.78571428571428 1285.7142857142858,169.39285714285714 1440,200 C 1440,200 1440,400 1440,400 Z'
-          stroke='none'
-          stroke-width='0'
-          fill='#490b3d'
-          class='transition-all duration-300 ease-in-out delay-150 path-0'
-        ></path>
-      </svg>
+      <Wave />
     </div>
   )
 }
