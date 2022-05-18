@@ -1,13 +1,24 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import './formInput.css'
 
 export const FormInput = (props) => {
-  const [focused, setFocused] = useState(false)
-
-  const handleFocus = () => setFocused(!focused)
-
   const { label, onChange, error, ...others } = props
+
+  const [activated, setActivated] = useState(false)
+
+  useEffect(() => {
+    let isMounted = true
+
+    if (isMounted)
+      others.value.trim().length !== 0
+        ? setActivated(true)
+        : setActivated(false)
+
+    return () => {
+      isMounted = false
+    }
+  }, [others.value])
 
   return (
     <div className='formInput'>
@@ -19,10 +30,8 @@ export const FormInput = (props) => {
         {...others}
         className='formInput__input'
         onChange={onChange}
-        onFocus={handleFocus}
-        onBlur={handleFocus}
       />
-      {focused && <span className='formInput__errorField'>{error}</span>}
+      {activated && <span className='formInput__errorField'>{error}</span>}
     </div>
   )
 }
