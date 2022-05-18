@@ -3,9 +3,11 @@ import React, { useState } from 'react'
 import './formInput.css'
 
 export const FormInput = (props) => {
-  const { label, onChange, error, ...others } = props
-
   const [focused, setFocused] = useState(false)
+
+  const handleFocus = () => setFocused(!focused)
+
+  const { label, onChange, error, ...others } = props
 
   return (
     <div className='formInput'>
@@ -17,8 +19,10 @@ export const FormInput = (props) => {
         {...others}
         className='formInput__input'
         onChange={onChange}
+        onFocus={handleFocus}
+        onBlur={handleFocus}
       />
-      <span className='formInput__errorField'>{error}</span>
+      {focused && <span className='formInput__errorField'>{error}</span>}
     </div>
   )
 }
