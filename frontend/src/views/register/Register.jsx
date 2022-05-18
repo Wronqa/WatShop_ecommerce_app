@@ -5,37 +5,6 @@ import { FormInput } from '../../components/FormInput/FormInput'
 
 import './register.css'
 
-const inputs = [
-  {
-    id: 1,
-    name: 'username',
-    placeholder: 'username',
-    type: 'text',
-    label: 'Username',
-  },
-  {
-    id: 2,
-    name: 'email',
-    placeholder: 'email',
-    type: 'text',
-    label: 'Email',
-  },
-  {
-    id: 3,
-    name: 'password',
-    placeholder: 'password',
-    type: 'password',
-    label: 'Password',
-  },
-  {
-    id: 4,
-    name: 'confirmPassword',
-    placeholder: 'confirm password',
-    type: 'password',
-    label: 'Confrim password',
-  },
-]
-
 export const Register = () => {
   const [values, setValues] = useState({
     username: '',
@@ -47,6 +16,45 @@ export const Register = () => {
   const onChange = (e) => {
     setValues({ ...values, [e.target.name]: e.target.value })
   }
+
+  const inputs = [
+    {
+      id: 1,
+      name: 'username',
+      placeholder: 'username',
+      type: 'text',
+      label: 'Username',
+      error: 'Username should be 4-15 characters!',
+      pattern: '.{4,15}',
+    },
+    {
+      id: 2,
+      name: 'email',
+      placeholder: 'email',
+      type: 'text',
+      label: 'Email',
+      error: 'Invalid email',
+      pattern: '/^w+([.-]?w+)*@w+([.-]?w+)*(.w{2,3})+$/',
+    },
+    {
+      id: 3,
+      name: 'password',
+      placeholder: 'password',
+      type: 'password',
+      label: 'Password',
+      error: 'Password must be strong!',
+      pattern: '(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,16}$',
+    },
+    {
+      id: 4,
+      name: 'confirmPassword',
+      placeholder: 'confirm password',
+      type: 'password',
+      label: 'Confrim password',
+      pattern: values.password,
+      error: 'The password must be the same',
+    },
+  ]
 
   return (
     <div className='register'>

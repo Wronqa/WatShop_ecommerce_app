@@ -14,3 +14,11 @@
   border-radius: 5px;
   border: 1px solid gray;
 }
+.formInput__input:invalid ~ .formInput__errorField {
+  display: inline;
+}
+.formInput__errorField {
+  font-size: 0.8rem;
+  color: red;
+  display: none;
+}

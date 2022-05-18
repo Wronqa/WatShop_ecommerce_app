@@ -1,9 +1,12 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import './formInput.css'
 
 export const FormInput = (props) => {
-  const { label, onChange, ...others } = props
+  const { label, onChange, error, ...others } = props
+
+  const [focused, setFocused] = useState(false)
+
   return (
     <div className='formInput'>
       <label htmlFor='' className='formInput__label'>
@@ -15,6 +18,7 @@ export const FormInput = (props) => {
         className='formInput__input'
         onChange={onChange}
       />
+      <span className='formInput__errorField'>{error}</span>
     </div>
   )
 }
